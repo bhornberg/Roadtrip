@@ -147,7 +147,7 @@ img.photo.ok{opacity:1}
 <button class="navbtn" id="prev" aria-label="Previous">‹</button>
 <button class="navbtn" id="next" aria-label="Next">›</button>
 <div id="bar"></div>
-<div class="hint">Swipe or arrows · ▦ map &amp; overview · tap "Sights &amp; food"</div>
+<div class="hint">Swipe to start — every stop plays its own song · ♪ mutes · ▦ map</div>
 
 <div id="sheet" hidden>
  <div id="sheetCard">
@@ -220,7 +220,8 @@ evergreen:"https://lh3.googleusercontent.com/place-photos/AJRVUZMoXWZ_X04H09U1vf
 cvr:"https://lh3.googleusercontent.com/place-photos/AJRVUZMgkmvMb8osCbJK7T9pv7QsBqwd2eVpkjHrIZoYxzAXh2ViWgYZl1btuHwipx1qrUQaNNwneOVDtSZ-H6rfAmn9RfqImgZO2Bo66oxzJkHmaaanjtzVWmpW_VuthL2hAoTpTAA4DYUdul4J=s4800-w800-h600",
 napa:"https://lh3.googleusercontent.com/place-photos/AJRVUZNGicHKkujb0OoBKNyELDRghAZO-g1gfKeDasZTJPmgcbPYpevUFSgOl4wxdQqiFJbDE7DH-oz1m3Po2KOJBAsSXpXQSrZrVoNyctZPFDzmyj5daqPLCaiY6DSzeZtEajBBdFR3Pbeo0wwVBw=s4800-w800-h600",
 gg:"https://lh3.googleusercontent.com/place-photos/AJRVUZOddU7hxuTElYoWH3uf1SnBs5ZvWu6O0Wk-twwAHafS9fFpoc_i6QXyNTdDM41vViJykhz5BD1hudQe06HwWISMqSQSNb9qYOA6hULIE9ZuP43jIsWUG24Wl01yWxc1VMT-AhCxyNWhXlEMJO8=s4800-w800-h600",
-poblanos:"https://lh3.googleusercontent.com/place-photos/AJRVUZOTuS1pXs4BpssaXYDUMAStCSp9qPrawWDLaswbPeleLzb4wiOpgM3-WXUd3Y7mlDFE09569uNeF4MyJtk5ottqQWjqNKO6LP3zvFLNoJiMfFIPr0qoA_vwncluKquH5SBiCHksZZmk9rTieg=s4800-w800-h600"
+poblanos:"https://lh3.googleusercontent.com/place-photos/AJRVUZOTuS1pXs4BpssaXYDUMAStCSp9qPrawWDLaswbPeleLzb4wiOpgM3-WXUd3Y7mlDFE09569uNeF4MyJtk5ottqQWjqNKO6LP3zvFLNoJiMfFIPr0qoA_vwncluKquH5SBiCHksZZmk9rTieg=s4800-w800-h600",
+slc:"https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/SLC_Skyline_2024.jpg/1280px-SLC_Skyline_2024.jpg"
 };
 
 /* ---------- itinerary data ---------- */
@@ -274,7 +275,7 @@ const STOPS=[
 {n:"Moab, UT · Arches & Canyonlands",type:"k",scene:"canyon",img:P.sorrel,days:"DAY 33–34",dates:"May 22–24",nights:2,drive:"2.5 h · ~240 km",
  note:"Delicate Arch at golden hour, Island in the Sky at sunrise. Upgrade: Sorrel River Ranch on the Colorado.",
  stay:"Design inn in Moab",cost:"≈ $520 (2 × $260)",web:"https://www.sorrelriver.com/",gm:"Moab UT"},
-{n:"Salt Lake City & Great Salt Lake, UT",type:"c",scene:"city",pal:3,days:"DAY 35",dates:"May 24–25",nights:1,drive:"3.5 h · ~380 km",
+{n:"Salt Lake City & Great Salt Lake, UT",type:"c",scene:"city",pal:3,img:P.slc,days:"DAY 35",dates:"May 24–25",nights:1,drive:"3.5 h · ~380 km",
  note:"Your pick! Sunset at Great Salt Lake State Park — float-in-the-water strange and beautiful — plus a proper city evening downtown.",
  stay:"Downtown SLC hotel",cost:"≈ $180",gm:"Great Salt Lake State Park"},
 {n:"Zion National Park, UT",type:"k",scene:"canyon",img:P.zion,days:"DAY 36–37",dates:"May 25–27",nights:2,drive:"4.5 h · ~490 km",
@@ -313,175 +314,230 @@ const STOPS=[
 const EXTRAS=[
 {see:[{t:"The High Line",w:"High Line",d:"Elevated park on an old freight rail line — walk it Gansevoort → Hudson Yards"},
       {t:"Central Park",w:"Central Park",d:"Rowboats at the Loeb Boathouse, Bethesda Terrace, the Mall"},
-      {t:"SUMMIT One Vanderbilt",w:"One Vanderbilt",d:"Mirror-room observation deck — book the golden-hour slot"}],
+      {t:"SUMMIT One Vanderbilt",w:"One Vanderbilt",d:"Mirror-room observation deck — book the golden-hour slot"},
+      {t:"Brooklyn Bridge",w:"Brooklyn Bridge",d:"Walk it at sunrise, Brooklyn → Manhattan"},
+      {t:"The Met",w:"Metropolitan Museum of Art",d:"Five thousand years of art on Fifth Avenue"}],
  eat:[{t:"Katz's Delicatessen",d:"Pastrami on rye since 1888 — the non-negotiable NYC meal"},
       {t:"Joe's Pizza",d:"The classic Greenwich Village slice, standing up"},
       {t:"Levain Bakery",d:"The famous 6-oz chocolate-chip cookie, warm"}]},
 {see:[{t:"National Mall",w:"National Mall",d:"Capitol → Washington Monument → Lincoln Memorial, best at dusk"},
       {t:"Air and Space Museum",w:"National Air and Space Museum",d:"Wright Flyer to Apollo — free, like all Smithsonians"},
-      {t:"Georgetown",w:"Georgetown (Washington, D.C.)",d:"Cobblestones, canal, M Street boutiques"}],
+      {t:"Georgetown",w:"Georgetown (Washington, D.C.)",d:"Cobblestones, canal, M Street boutiques"},
+      {t:"Library of Congress",w:"Library of Congress",d:"The most beautiful room in America — and it's free"},
+      {t:"Tidal Basin",w:"Tidal Basin",d:"Jefferson Memorial across the water at dusk"}],
  eat:[{t:"Ben's Chili Bowl",d:"Half-smoke with chili — DC institution since 1958"},
       {t:"Old Ebbitt Grill",d:"Oysters at Washington's oldest saloon, steps from the White House"}]},
 {see:[{t:"Skyline Drive",w:"Skyline Drive",d:"169 km along the Blue Ridge crest — 75 overlooks"},
       {t:"Old Rag Mountain",w:"Old Rag Mountain",d:"The best (and most fun) rock-scramble hike in Virginia"},
-      {t:"Luray Caverns",w:"Luray Caverns",d:"Cathedral-sized caves with the 'Great Stalacpipe Organ'"}],
+      {t:"Luray Caverns",w:"Luray Caverns",d:"Cathedral-sized caves with the 'Great Stalacpipe Organ'"},
+      {t:"Shenandoah National Park",w:"Shenandoah National Park",d:"Deer, black bears and 800 km of trails"},
+      {t:"Little Washington",w:"Washington, Virginia",d:"The tiny 1749 village George Washington surveyed himself"}],
  eat:[{t:"The Inn at Little Washington",d:"3 Michelin stars in a village of 130 people — book far ahead"},
       {t:"Red Truck Bakery",d:"Legendary rural bakery — grab road snacks"}]},
 {see:[{t:"Biltmore Estate",w:"Biltmore Estate",d:"America's largest private house, 8,000-acre grounds"},
       {t:"Blue Ridge Parkway",w:"Blue Ridge Parkway",d:"Drive a stretch south toward Mount Pisgah"},
-      {t:"River Arts District",w:"River Arts District (Asheville, North Carolina)",d:"200+ working artist studios in old mills"}],
+      {t:"River Arts District",w:"River Arts District (Asheville, North Carolina)",d:"200+ working artist studios in old mills"},
+      {t:"Grove Arcade",w:"Grove Arcade",d:"1929 arcade full of indie shops and cafés"},
+      {t:"Grove Park Inn",w:"The Omni Grove Park Inn",d:"Granite landmark hotel — sunset drink on the terrace"}],
  eat:[{t:"Cúrate",d:"James-Beard-winning Spanish tapas — book ahead"},
       {t:"12 Bones Smokehouse",d:"Blueberry-chipotle ribs; the Obamas' Asheville stop"}]},
 {see:[{t:"Cades Cove",w:"Cades Cove",d:"18-km loop at dawn: bears, deer, pioneer cabins"},
       {t:"Kuwohi (Clingmans Dome)",w:"Kuwohi",d:"Highest point in the Smokies — 360° tower view"},
-      {t:"Roaring Fork Motor Nature Trail",w:"Roaring Fork Motor Nature Trail",d:"One-way forest drive with waterfall walks"}],
+      {t:"Roaring Fork Motor Nature Trail",w:"Roaring Fork Motor Nature Trail",d:"One-way forest drive with waterfall walks"},
+      {t:"Gatlinburg",w:"Gatlinburg, Tennessee",d:"Kitschy-fun gateway town with a mountain SkyBridge"},
+      {t:"Laurel Falls",w:"Laurel Falls Trail",d:"Easy 4-km walk to a 24-m double waterfall"}],
  eat:[{t:"The Old Mill Restaurant",d:"Southern comfort food beside an 1830 gristmill"},
       {t:"Blackberry Farm",d:"Foothills 'foodie paradise' — the splurge dinner"}]},
 {see:[{t:"Ryman Auditorium",w:"Ryman Auditorium",d:"The 'Mother Church of Country Music' — take the tour or catch a show"},
       {t:"Grand Ole Opry",w:"Grand Ole Opry",d:"The longest-running radio show on Earth, live"},
-      {t:"Country Music Hall of Fame",w:"Country Music Hall of Fame and Museum",d:"Elvis's gold Cadillac included"}],
+      {t:"Country Music Hall of Fame",w:"Country Music Hall of Fame and Museum",d:"Elvis's gold Cadillac included"},
+      {t:"Lower Broadway",w:"Broadway (Nashville, Tennessee)",d:"Neon honky-tonks with free live music all day"},
+      {t:"The Parthenon",w:"Parthenon (Nashville)",d:"A full-scale Greek Parthenon in a city park"}],
  eat:[{t:"Hattie B's Hot Chicken",d:"Nashville hot chicken — start at 'medium', trust us"},
       {t:"Arnold's Country Kitchen",d:"The definitive meat-and-three lunch"}]},
 {see:[{t:"Graceland",w:"Graceland",d:"Elvis's home, jungle room and all"},
       {t:"Sun Studio",w:"Sun Studio",d:"Where Elvis, Cash and Jerry Lee cut their first records"},
-      {t:"National Civil Rights Museum",w:"National Civil Rights Museum",d:"At the Lorraine Motel — moving and essential"}],
+      {t:"National Civil Rights Museum",w:"National Civil Rights Museum",d:"At the Lorraine Motel — moving and essential"},
+      {t:"Peabody Duck March",w:"Peabody Hotel",d:"Ducks ride the lobby elevator daily at 11 and 5"},
+      {t:"Stax Museum",w:"Stax Museum of American Soul Music",d:"Soulsville USA — where Otis Redding recorded"}],
  eat:[{t:"Charlie Vergos' Rendezvous",d:"Dry-rub ribs in a basement alley since 1948"},
       {t:"Gus's Fried Chicken",d:"Spicy fried chicken worth the wait"}]},
 {see:[{t:"Jackson Square",w:"Jackson Square (New Orleans)",d:"St Louis Cathedral, street artists, fortune tellers"},
       {t:"Preservation Hall",w:"Preservation Hall",d:"45-minute acoustic jazz sets — queue early, cash only"},
-      {t:"Garden District",w:"Garden District, New Orleans",d:"Streetcar to mansions and Lafayette Cemetery"}],
+      {t:"Garden District",w:"Garden District, New Orleans",d:"Streetcar to mansions and Lafayette Cemetery"},
+      {t:"French Quarter",w:"French Quarter",d:"Wrought-iron balconies — prettiest along Royal Street"},
+      {t:"St. Charles Streetcar",w:"St. Charles Streetcar Line",d:"The world's oldest streetcar line, $1.25 through the oaks"}],
  eat:[{t:"Café du Monde",d:"Beignets & chicory coffee, 24 h — go at night"},
       {t:"Central Grocery",d:"Birthplace of the muffuletta (1906)"},
       {t:"Commander's Palace",d:"Turtle soup + 25¢ martini weekday lunch"}]},
 {see:[{t:"Texas State Capitol",w:"Texas State Capitol",d:"Taller than the US Capitol — this is Texas"},
       {t:"Congress Bridge bats",w:"Ann W. Richards Congress Avenue Bridge",d:"1.5 million bats at dusk, Mar–Oct"},
-      {t:"Barton Springs Pool",w:"Barton Springs Pool",d:"20°C spring-fed pool — Austin's living room"}],
+      {t:"Barton Springs Pool",w:"Barton Springs Pool",d:"20°C spring-fed pool — Austin's living room"},
+      {t:"South Congress",w:"South Congress",d:"Boutiques, vintage and murals — an afternoon sorted"},
+      {t:"Zilker Park",w:"Zilker Park",d:"Kayaks, skyline views and food trucks on the lake"}],
  eat:[{t:"Franklin Barbecue",d:"The best brisket in America; queue from ~8 am or pre-order"},
       {t:"Veracruz All Natural",d:"The migas taco that made the food trucks famous"}]},
 {see:[{t:"Museum of the Pacific War",w:"National Museum of the Pacific War",d:"World-class WWII museum (Nimitz's hometown)"},
       {t:"Enchanted Rock",w:"Enchanted Rock",d:"Pink granite dome — sunset summit walk"},
-      {t:"Wildseed Farms",d:"Wildflower fields at their April–May peak"}],
+      {t:"Wildseed Farms",d:"Wildflower fields at their April–May peak"},
+      {t:"Luckenbach",w:"Luckenbach, Texas",d:"Population 3 — daily pickers' circle under the oaks"},
+      {t:"Old Tunnel bats",w:"Old Tunnel State Park",d:"Three million bats emerge at dusk, May–Oct"}],
  eat:[{t:"Altstadt Brewery / Auslander",d:"Schnitzel & Weißbier on Main Street — German Texas is real"},
       {t:"Becker Vineyards",d:"Hill-country tasting room among the lavender"}]},
 {see:[{t:"Prada Marfa",w:"Prada Marfa",d:"The famous fake boutique, alone on Highway 90"},
       {t:"Chinati Foundation",w:"Chinati Foundation",d:"Donald Judd's artillery-shed installations — book the tour"},
-      {t:"Marfa Lights viewing area",w:"Marfa lights",d:"Unexplained lights on the desert horizon, most nights"}],
+      {t:"Marfa Lights viewing area",w:"Marfa lights",d:"Unexplained lights on the desert horizon, most nights"},
+      {t:"McDonald Observatory",w:"McDonald Observatory",d:"Star parties under the darkest skies in Texas"},
+      {t:"Hotel Paisano",w:"Hotel Paisano",d:"Where Liz Taylor and James Dean stayed filming 'Giant'"}],
  eat:[{t:"Marfa Burrito",d:"Legendary cash-only burrito shack — 'the best in Texas'"},
       {t:"Cochineal",d:"Surprisingly refined dinner for a town of 1,700"}]},
 {see:[{t:"White Sands dunes",w:"White Sands National Park",d:"Sled the gypsum dunes (buy a disc at the visitor center)"},
       {t:"Old Mesilla",w:"Mesilla, New Mexico",d:"Adobe plaza where Billy the Kid stood trial"},
-      {t:"Organ Mountains",w:"Organ Mountains",d:"Jagged 2,700-m backdrop — Dripping Springs trail"}],
+      {t:"Organ Mountains",w:"Organ Mountains",d:"Jagged 2,700-m backdrop — Dripping Springs trail"},
+      {t:"Museum of Space History",w:"New Mexico Museum of Space History",d:"Rockets above Alamogordo, minutes from the dunes"},
+      {t:"Three Rivers Petroglyphs",w:"Three Rivers Petroglyph Site",d:"21,000 ancient rock carvings an hour north"}],
  eat:[{t:"La Posta de Mesilla",d:"New-Mexican classics in a 1840s adobe since 1939"},
       {t:"Caliche's Frozen Custard",d:"Las Cruces' beloved custard stand"}]},
 {see:[{t:"Georgia O'Keeffe Museum",w:"Georgia O'Keeffe Museum",d:"The largest O'Keeffe collection anywhere"},
       {t:"Canyon Road",w:"Canyon Road",d:"100 galleries along one adobe-lined kilometre"},
-      {t:"Meow Wolf",w:"Meow Wolf",d:"Walk-through psychedelic art house — book ahead"}],
+      {t:"Meow Wolf",w:"Meow Wolf",d:"Walk-through psychedelic art house — book ahead"},
+      {t:"Loretto Chapel",w:"Loretto Chapel",d:"The 'miraculous' freestanding spiral staircase"},
+      {t:"Bandelier",w:"Bandelier National Monument",d:"Ladder-climb into 800-year-old cliff dwellings"}],
  eat:[{t:"The Shed",d:"Red-chile enchiladas since 1953 — half a block off the Plaza"},
       {t:"Tia Sophia's",d:"Claims the original breakfast burrito; locals agree"}]},
 {see:[{t:"Mather Point",w:"Mather Point",d:"The classic first look — go at sunrise before the crowds"},
       {t:"Hopi Point",w:"Hopi Point",d:"The sunset spot — widest canyon panorama on Hermit Road"},
-      {t:"Desert View Watchtower",w:"Desert View Watchtower",d:"Mary Colter's 1932 tower with Colorado River views"}],
+      {t:"Desert View Watchtower",w:"Desert View Watchtower",d:"Mary Colter's 1932 tower with Colorado River views"},
+      {t:"Bright Angel Trail",w:"Bright Angel Trail",d:"Even 30 minutes below the rim changes everything"},
+      {t:"Desert View Drive",w:"Desert View Drive",d:"40 km of rim viewpoints toward the Painted Desert"}],
  eat:[{t:"El Tovar Dining Room",d:"1905 lodge dining on the rim — reserve well ahead"},
       {t:"Maswik Food Court",d:"The practical, decent option inside the park"}]},
 {see:[{t:"Valley Drive (17-mile loop)",w:"Monument Valley",d:"Self-drive the dirt loop past the Mittens & Totem Pole"},
       {t:"John Ford's Point",d:"The director's favorite overlook — occasional horseback photo ops"},
-      {t:"Forrest Gump Point",w:"Forrest Gump Point",d:"Mile 13, US-163: 'that' road shot"}],
+      {t:"Forrest Gump Point",w:"Forrest Gump Point",d:"Mile 13, US-163: 'that' road shot"},
+      {t:"Goulding's Trading Post",w:"Goulding's Lodge",d:"1920s trading post and museum of the John Ford era"},
+      {t:"Mexican Hat",w:"Mexican Hat, Utah",d:"The sombrero rock — pair with the wild Moki Dugway road"}],
  eat:[{t:"The View Restaurant",d:"Navajo taco with the Mittens out the window"},
       {t:"Goulding's Stagecoach Dining Room",d:"Historic trading-post lodge dinner"}]},
 {see:[{t:"Delicate Arch",w:"Delicate Arch",d:"5-km round-trip hike; golden hour is magic (bring water)"},
       {t:"Mesa Arch",w:"Mesa Arch",d:"Canyonlands' famous sunrise arch — 10-min walk"},
-      {t:"Dead Horse Point",w:"Dead Horse Point State Park",d:"2,000-ft gooseneck bend of the Colorado"}],
+      {t:"Dead Horse Point",w:"Dead Horse Point State Park",d:"2,000-ft gooseneck bend of the Colorado"},
+      {t:"Corona Arch",w:"Corona Arch",d:"Bigger than Delicate Arch, a fraction of the crowd"},
+      {t:"Landscape Arch",w:"Landscape Arch",d:"90 m of impossibly thin stone in Devils Garden"}],
  eat:[{t:"Milt's Stop & Eat",d:"Burgers & malts since 1954 — Moab's oldest diner"},
       {t:"Desert Bistro",d:"White-tablecloth game & seafood in an 1892 dance hall"}]},
 {see:[{t:"Antelope Island",w:"Antelope Island",d:"Bison herds and the best Great Salt Lake views"},
       {t:"Temple Square",w:"Temple Square",d:"The city's monumental core"},
-      {t:"Great Salt Lake State Park",w:"Great Salt Lake",d:"Float-don't-swim sunset on the south shore"}],
+      {t:"Great Salt Lake State Park",w:"Great Salt Lake",d:"Float-don't-swim sunset on the south shore"},
+      {t:"Utah State Capitol",w:"Utah State Capitol",d:"Hilltop dome with valley-wide views"},
+      {t:"Ensign Peak",w:"Ensign Peak",d:"20-minute climb to where the city was planned from"}],
  eat:[{t:"Red Iguana",d:"Seven kinds of mole — worth every minute of the wait"},
       {t:"Crown Burgers",d:"The pastrami burger, a Utah invention"}]},
 {see:[{t:"The Narrows",w:"The Narrows (Zion National Park)",d:"Hike *in* the river between 300-m walls — rent gear in Springdale"},
       {t:"Angels Landing",w:"Angels Landing",d:"Chain-assisted ridge climb — needs a permit (seasonal lottery)"},
-      {t:"Canyon Overlook Trail",w:"Zion–Mount Carmel Highway",d:"1.6 km to a huge view, right off the 1930 tunnel"}],
+      {t:"Canyon Overlook Trail",w:"Zion–Mount Carmel Highway",d:"1.6 km to a huge view, right off the 1930 tunnel"},
+      {t:"Kolob Canyons",w:"Kolob Canyons",d:"Zion's crowd-free crimson finger canyons"},
+      {t:"Emerald Pools",w:"Emerald Pools",d:"Waterfall grottos an easy stroll from the lodge"}],
  eat:[{t:"Oscar's Cafe",d:"Post-hike green-chile burgers on the patio"},
       {t:"Zion Canyon Brew Pub",d:"Beer with a view at the park's pedestrian gate"}]},
 {see:[{t:"Fountains of the Bellagio",w:"Fountains of Bellagio",d:"Every 15–30 min after dark — free and still the best show"},
       {t:"Sphere",w:"Sphere (venue)",d:"The 112-m LED ball — catch a show inside if dates align"},
-      {t:"Fremont Street",w:"Fremont Street Experience",d:"Old Vegas neon under the light-show canopy"}],
+      {t:"Fremont Street",w:"Fremont Street Experience",d:"Old Vegas neon under the light-show canopy"},
+      {t:"Neon Museum",w:"Neon Museum",d:"Vegas's retired signs, glowing again at night"},
+      {t:"Red Rock Canyon",w:"Red Rock Canyon National Conservation Area",d:"13-mile scenic drive, 30 minutes from the Strip"}],
  eat:[{t:"Lotus of Siam",d:"Frequently called the best Thai restaurant in America"},
       {t:"Bacchanal Buffet",d:"The one buffet worth doing, at Caesars"}]},
 {see:[{t:"La Jolla Cove",w:"La Jolla Cove",d:"Sea lions & snorkeling in the marine reserve"},
       {t:"Balboa Park",w:"Balboa Park (San Diego)",d:"17 museums in Spanish-revival gardens"},
-      {t:"USS Midway Museum",w:"USS Midway Museum",d:"Walk the flight deck of a Cold-War carrier"}],
+      {t:"USS Midway Museum",w:"USS Midway Museum",d:"Walk the flight deck of a Cold-War carrier"},
+      {t:"Hotel del Coronado",w:"Hotel del Coronado",d:"1888 seaside icon — 'Some Like It Hot' was shot here"},
+      {t:"Torrey Pines",w:"Torrey Pines State Natural Reserve",d:"Cliff-top trails above surfers and paragliders"}],
  eat:[{t:"Oscar's Mexican Seafood",d:"The smoked-fish taco that converts everyone"},
       {t:"Hodad's",d:"Ocean Beach's legendary bacon cheeseburger"}]},
 {see:[{t:"El Matador State Beach",w:"El Matador State Beach",d:"Sea stacks & caves — THE Malibu photo beach"},
       {t:"Point Dume",w:"Point Dume",d:"Whale-watching headland above Zuma"},
-      {t:"Getty Villa",w:"Getty Villa",d:"Roman villa full of antiquities — free, reserve timed entry"}],
+      {t:"Getty Villa",w:"Getty Villa",d:"Roman villa full of antiquities — free, reserve timed entry"},
+      {t:"Malibu Pier",w:"Malibu Pier",d:"Surf-watching with a farm café at the pier's end"},
+      {t:"Solstice Canyon",w:"Solstice Canyon",d:"Creekside walk to a ruined villa and waterfall"}],
  eat:[{t:"Neptune's Net",d:"Biker-and-surfer seafood shack on the PCH since 1956"},
       {t:"Malibu Farm Pier Cafe",d:"Farm-to-table breakfast at the end of the pier"}]},
 {see:[{t:"Old Mission Santa Barbara",w:"Mission Santa Barbara",d:"The 'Queen of the Missions' (1786)"},
       {t:"County Courthouse tower",w:"Santa Barbara County Courthouse",d:"Free 360° view over red-tile roofs to the sea"},
-      {t:"Stearns Wharf",w:"Stearns Wharf",d:"California's oldest working wharf"}],
+      {t:"Stearns Wharf",w:"Stearns Wharf",d:"California's oldest working wharf"},
+      {t:"Butterfly Beach",w:"Butterfly Beach",d:"Montecito's golden-hour swim spot"},
+      {t:"State Street",w:"State Street (Santa Barbara, California)",d:"Palm-lined promenade of tasting rooms and shops"}],
  eat:[{t:"La Super-Rica Taqueria",d:"Julia Child's favorite taco stand — cash, queue, worth it"},
       {t:"Brophy Bros",d:"Clam chowder over the harbor"}]},
 {see:[{t:"General Sherman Tree",w:"General Sherman (tree)",d:"The largest living tree on Earth, 2,200 years old"},
       {t:"Moro Rock",w:"Moro Rock",d:"350 stone steps to a granite-dome panorama"},
-      {t:"Tunnel Log",w:"Tunnel Log",d:"Drive through a fallen 84-m sequoia"}],
+      {t:"Tunnel Log",w:"Tunnel Log",d:"Drive through a fallen 84-m sequoia"},
+      {t:"Crescent Meadow",w:"Crescent Meadow",d:"Sierra meadow ringed by giants — bears at dawn"},
+      {t:"Kings Canyon",w:"Kings Canyon National Park",d:"The deeper, wilder twin park next door"}],
  eat:[{t:"Gateway Restaurant",d:"Dinner on a deck over the Kaweah River"},
       {t:"Ol' Buckaroo",d:"Three Rivers' charming roadside kitchen"}]},
 {see:[{t:"Tunnel View",w:"Tunnel View",d:"El Capitan, Half Dome & Bridalveil in one frame"},
       {t:"Glacier Point",w:"Glacier Point",d:"The valley from 975 m above — road opens late May"},
-      {t:"Yosemite Falls",w:"Yosemite Falls",d:"North America's tallest waterfall at full June thunder"}],
+      {t:"Yosemite Falls",w:"Yosemite Falls",d:"North America's tallest waterfall at full June thunder"},
+      {t:"Mariposa Grove",w:"Mariposa Grove",d:"500 giant sequoias including the Grizzly Giant"},
+      {t:"El Capitan",w:"El Capitan",d:"Scan the 900-m wall for climbers' headlamps at dusk"}],
  eat:[{t:"The Ahwahnee Dining Room",d:"1927 grand-lodge dining under 10-m beams"},
       {t:"Evergreen Lodge Tavern",d:"Burgers & live music at your own lodge"}]},
 {see:[{t:"Bixby Creek Bridge",w:"Bixby Creek Bridge",d:"The Big Sur bridge — pull out on the north side"},
       {t:"McWay Falls",w:"McWay Falls",d:"25-m fall straight onto the beach"},
-      {t:"Monterey Bay Aquarium",w:"Monterey Bay Aquarium",d:"Sea otters & the kelp forest — world class"}],
+      {t:"Monterey Bay Aquarium",w:"Monterey Bay Aquarium",d:"Sea otters & the kelp forest — world class"},
+      {t:"Point Lobos",w:"Point Lobos",d:"'The greatest meeting of land and water' — Edward Weston"},
+      {t:"17-Mile Drive",w:"17-Mile Drive",d:"Pebble Beach, the Lone Cypress, seal-covered rocks"}],
  eat:[{t:"Nepenthe",d:"Ambrosia burger 250 m above the Pacific"},
       {t:"Big Sur Bakery",d:"Wood-fired morning pastries worth planning around"}]},
 {see:[{t:"Domaine Carneros",w:"Domaine Carneros",d:"Sparkling-wine château tasting on the terrace"},
       {t:"Oxbow Public Market",w:"Oxbow Public Market",d:"Napa's gourmet food hall"},
-      {t:"Castello di Amorosa",w:"Castello di Amorosa",d:"A full 13th-century-style Tuscan castle winery"}],
+      {t:"Castello di Amorosa",w:"Castello di Amorosa",d:"A full 13th-century-style Tuscan castle winery"},
+      {t:"Napa Valley Wine Train",w:"Napa Valley Wine Train",d:"1915 Pullman cars, lunch rolling through the vines"},
+      {t:"Calistoga",w:"Calistoga, California",d:"Hot springs, mud baths and California's Old Faithful"}],
  eat:[{t:"Gott's Roadside",d:"Ahi burgers & shakes among the vines"},
       {t:"Bouchon Bakery",d:"Thomas Keller's Yountville bakery (The French Laundry next door, for the once-in-a-lifetime)"}]},
 {see:[{t:"Golden Gate Bridge",w:"Golden Gate Bridge",d:"Bike across to Sausalito, ferry back"},
       {t:"Alcatraz",w:"Alcatraz Island",d:"The night tour is the one — book weeks ahead"},
-      {t:"Ferry Building",w:"Ferry Building",d:"Saturday farmers market on the Embarcadero"}],
+      {t:"Ferry Building",w:"Ferry Building",d:"Saturday farmers market on the Embarcadero"},
+      {t:"Golden Gate Park",w:"Golden Gate Park",d:"Bison, gardens and two world-class museums"},
+      {t:"Lombard Street",w:"Lombard Street (San Francisco)",d:"The crookedest block — walk it, don't drive it"}],
  eat:[{t:"Swan Oyster Depot",d:"18 marble counter stools, since 1912 — go at 10:30"},
       {t:"Tartine Bakery",d:"The morning bun that launched a thousand bakeries"},
       {t:"La Taqueria",d:"The Mission burrito, perfected"}]}
 ];
 
-/* ---------- soundtrack: one Spotify track per stop (same order as STOPS) ---------- */
+/* ---------- soundtrack: one Spotify track per stop (same order as STOPS)
+   p = 30-second preview MP3 hash on p.scdn.co, used for the auto-playing radio ---------- */
 const SONGS=[
-{id:"5sra5UY6sD658OabHL3QtI",t:"Empire State of Mind (Part II) — Alicia Keys"},
-{id:"2Qyd6O0zzGrA8Ml2IClSW9",t:"The District Sleeps Alone Tonight — The Postal Service"},
-{id:"1QbOvACeYanja5pbnJbAmk",t:"Take Me Home, Country Roads — John Denver"},
-{id:"5aAHai9OzUlkYPk2TJ4LLp",t:"Wagon Wheel — Old Crow Medicine Show"},
-{id:"6se4sK4ZbkNgOJUkmszbxX",t:"Rocky Top — The Osborne Brothers"},
-{id:"5rDkA2TFOImbiVenmnE9r4",t:"Ring of Fire — Johnny Cash"},
-{id:"5fgkjhICZnqFctrV0AyuQD",t:"Walking in Memphis — Marc Cohn"},
-{id:"6YOzorSue4rth45mFIc32r",t:"House of the Rising Sun — The Animals"},
-{id:"5MtN38MGEWJt60LwtBmFNP",t:"Texas Flood — Stevie Ray Vaughan"},
-{id:"4WScDSwAa9m48pgHugVkCo",t:"Luckenbach, Texas — Waylon & Willie"},
-{id:"4f8hBeMXMvssn6HtFAtblo",t:"El Paso — Marty Robbins"},
-{id:"54eZmuggBFJbV7k248bTTt",t:"A Horse with No Name — America"},
-{id:"2bxQP85JNU11CQV4KXCnau",t:"Santa Fe — Beirut"},
-{id:"4yugZvBYaoREkJKtbG08Qr",t:"Take It Easy — Eagles"},
-{id:"3DNXN5fPRdkYm64oCdV8L6",t:"(Ghost) Riders in the Sky — Johnny Cash"},
-{id:"6PIEE443qM0IS279RdW24q",t:"Big Rock Candy Mountain — Harry McClintock"},
-{id:"6iYZuHW7IAUTvUpvRTVQZA",t:"The Great Salt Lake — Band of Horses"},
-{id:"5jotVjBvm9rSZSHvj4QA9R",t:"Higher Ground — Red Hot Chili Peppers"},
-{id:"5Q7ayTarb9Tpmkik5cVMug",t:"Viva Las Vegas — Elvis Presley"},
-{id:"2USJYiIo3g8dt9a2qzD9fG",t:"San Diego — blink-182"},
-{id:"1UZOjK1BwmwWU14Erba9CZ",t:"Malibu — Miley Cyrus"},
-{id:"4IU1RL4BKvFyXtbTwaHAvW",t:"Ventura Highway — America"},
-{id:"3ZjrfGcb3A2PMGA1vRNgSk",t:"This Land Is Your Land — Woody Guthrie"},
-{id:"2Pr1nZpt8A8WP7QYpyq6L3",t:"Wildflowers — Tom Petty"},
-{id:"5eM6Rrk8rwLpUhrh7Kk5R1",t:"California — Joni Mitchell"},
-{id:"2JKRZGp4LwT9GGbcXtx2sw",t:"Summer Wine — Nancy Sinatra & Lee Hazlewood"},
-{id:"66ujRcQB3xjilVohGyvTKM",t:"San Francisco — Scott McKenzie"}
+{id:"5sra5UY6sD658OabHL3QtI",t:"Empire State of Mind (Part II) — Alicia Keys",p:"10fbb8e7dd218c7b4c2b52b86256cd3e8c9de220"},
+{id:"2Qyd6O0zzGrA8Ml2IClSW9",t:"The District Sleeps Alone Tonight — The Postal Service",p:"751a24b05e591d51ad5900f6e79750755867bf4c"},
+{id:"1QbOvACeYanja5pbnJbAmk",t:"Take Me Home, Country Roads — John Denver",p:"b0805419e05dd1872abea1d5a798399be024cde8"},
+{id:"5aAHai9OzUlkYPk2TJ4LLp",t:"Wagon Wheel — Old Crow Medicine Show",p:"7426c1ca8ce8ce5606e34a831ea32dc6e3a19728"},
+{id:"6se4sK4ZbkNgOJUkmszbxX",t:"Rocky Top — The Osborne Brothers",p:"6b1f59950c80a61aff3c9515d365b9e08803ac76"},
+{id:"5rDkA2TFOImbiVenmnE9r4",t:"Ring of Fire — Johnny Cash",p:"95040e0e255484fef47c7f760cf81c7340edcce3"},
+{id:"5fgkjhICZnqFctrV0AyuQD",t:"Walking in Memphis — Marc Cohn",p:"87b81c129df5a138b68f4fb8897973f81bce7e77"},
+{id:"6YOzorSue4rth45mFIc32r",t:"House of the Rising Sun — The Animals",p:"0a512a2bfcff209c994478613b2537b7efbe275d"},
+{id:"5MtN38MGEWJt60LwtBmFNP",t:"Texas Flood — Stevie Ray Vaughan",p:"cb888e4cf055dbd7da462aab1fb915062c44c0e9"},
+{id:"4WScDSwAa9m48pgHugVkCo",t:"Luckenbach, Texas — Waylon & Willie",p:"4c1b2de794fc700523ac4e19ced67cb4a1b5016a"},
+{id:"4f8hBeMXMvssn6HtFAtblo",t:"El Paso — Marty Robbins",p:"3b489d7a0986b2c0c0cdecbef6780a6a8193f0a5"},
+{id:"54eZmuggBFJbV7k248bTTt",t:"A Horse with No Name — America",p:"00137d4f947b06e8e1bc5242510e74fdf231e318"},
+{id:"2bxQP85JNU11CQV4KXCnau",t:"Santa Fe — Beirut",p:"fa5ebd6cb4f42fa680baf634d3f4246e3ac2ee03"},
+{id:"4yugZvBYaoREkJKtbG08Qr",t:"Take It Easy — Eagles",p:"4b32d39b05829f2c442aa869354f0f63cefcef24"},
+{id:"3DNXN5fPRdkYm64oCdV8L6",t:"(Ghost) Riders in the Sky — Johnny Cash",p:"43ca6acfd9faff518fb2cf31ce4d285ec8a37497"},
+{id:"6PIEE443qM0IS279RdW24q",t:"Big Rock Candy Mountain — Harry McClintock",p:"6ce1097019ca7c6dd4ad8127c0f09fcc9f95f84c"},
+{id:"6iYZuHW7IAUTvUpvRTVQZA",t:"The Great Salt Lake — Band of Horses",p:"3555806e3e4186a484c55c5335d2c8a6b94890fe"},
+{id:"5jotVjBvm9rSZSHvj4QA9R",t:"Higher Ground — Red Hot Chili Peppers",p:"f211e602e662272d1b439f918acc931d61a707ed"},
+{id:"5Q7ayTarb9Tpmkik5cVMug",t:"Viva Las Vegas — Elvis Presley",p:"308fe13a8c90c011c960ddfeff3d42d882650902"},
+{id:"2USJYiIo3g8dt9a2qzD9fG",t:"San Diego — blink-182",p:"1adc341afefc78131bb90e864776edf74460b496"},
+{id:"1UZOjK1BwmwWU14Erba9CZ",t:"Malibu — Miley Cyrus",p:"a8d684d7efd5dbfa39a80bc7a2c523729a11ec6b"},
+{id:"4IU1RL4BKvFyXtbTwaHAvW",t:"Ventura Highway — America",p:"8956c068030ee367a14ab57e1488c2d76923dd2d"},
+{id:"3ZjrfGcb3A2PMGA1vRNgSk",t:"This Land Is Your Land — Woody Guthrie",p:"a82349d0ea1e41f1ed9be1bafb421a6db67e2f03"},
+{id:"2Pr1nZpt8A8WP7QYpyq6L3",t:"Wildflowers — Tom Petty",p:"d6348b007505d5e24db78506180da8d80948c79f"},
+{id:"5eM6Rrk8rwLpUhrh7Kk5R1",t:"California — Joni Mitchell",p:"642f579e2df6df303b4b71455a817e30a0a7dd19"},
+{id:"2JKRZGp4LwT9GGbcXtx2sw",t:"Summer Wine — Nancy Sinatra & Lee Hazlewood",p:"2f600e84d89c1d4979fd1a353316c388eece9b8d"},
+{id:"66ujRcQB3xjilVohGyvTKM",t:"San Francisco — Scott McKenzie",p:"5663231ea5c8340e4198352a0cef6ba4094e26e6"}
 ];
-const ANTHEM={id:"1MECz5s2xnd4QdWn64spLc",t:"Life Is a Highway — Tom Cochrane"};
+const ANTHEM={id:"1MECz5s2xnd4QdWn64spLc",t:"Life Is a Highway — Tom Cochrane",p:"c31002be288160ddc9a4b997f0ffec53b535767f"};
 
 /* ---------- coordinates per stop (same order as STOPS) ---------- */
 const COORDS=[
@@ -699,19 +755,49 @@ function startAmbience(){
  g.gain.linearRampToValueAtTime(.11,ac.currentTime+2.5);
  return {g,nodes,ac};
 }
+/* ---------- road-trip radio: auto-plays the fitting song per slide ----------
+   Phones only allow sound after the first touch — the first swipe/tap starts it. */
+const PBASE="https://p.scdn.co/mp3-preview/";
+const player=new Audio();player.loop=true;player.preload="auto";player.volume=0;
+let musicOn=localStorage.getItem('deckMusicOff')!=='1',curTrack=null,fadeT=null,unlocked=false;
+function paintSound(){soundBtn.classList.toggle('on',musicOn)}
+function trackFor(i){const s=(i>=2&&i<STOPS.length+2)?SONGS[i-2]:ANTHEM;return s&&s.p?PBASE+s.p:null}
+function fade(to,then){clearInterval(fadeT);fadeT=setInterval(()=>{
+ const d=to-player.volume;
+ if(Math.abs(d)<=.05){player.volume=to;clearInterval(fadeT);then&&then()}
+ else player.volume=Math.max(0,Math.min(1,player.volume+Math.sign(d)*.05));
+},45)}
+function stopDrone(){if(amb){amb.g.gain.linearRampToValueAtTime(0,amb.ac.currentTime+.6);
+ const a=amb;amb=null;setTimeout(()=>a.nodes.forEach(x=>{try{x.stop()}catch(e){}}),700)}}
+function playFor(i){
+ if(!musicOn||!unlocked)return;
+ const u=trackFor(i);
+ if(!u){if(!amb)amb=startAmbience();return}
+ stopDrone();
+ if(u===curTrack){if(player.paused)player.play().catch(()=>{});fade(.55);return}
+ const sw=()=>{curTrack=u;player.src=u;player.play().then(()=>fade(.55)).catch(()=>{})};
+ if(!player.paused&&player.volume>0)fade(0,sw);else sw();
+}
+player.onerror=()=>{if(musicOn&&unlocked&&!amb)amb=startAmbience()}; // offline fallback: generated ambience
+function stopMusic(){fade(0,()=>player.pause());stopDrone()}
 soundBtn.onclick=()=>{
- if(amb){
-  amb.g.gain.linearRampToValueAtTime(0,amb.ac.currentTime+.7);
-  const a=amb;amb=null;setTimeout(()=>a.nodes.forEach(x=>{try{x.stop()}catch(e){}}),800);
-  soundBtn.classList.remove('on');
- }else{
-  amb=startAmbience();soundBtn.classList.add('on');
- }
+ musicOn=!musicOn;localStorage.setItem('deckMusicOff',musicOn?'0':'1');paintSound();
+ if(musicOn){unlocked=true;AC=AC||new (window.AudioContext||window.webkitAudioContext)();playFor(idx)}
+ else stopMusic();
 };
+paintSound();
+function unlock(){
+ if(unlocked)return;unlocked=true;
+ AC=AC||new (window.AudioContext||window.webkitAudioContext)();
+ if(AC.resume)AC.resume();
+ playFor(idx);
+}
+document.addEventListener('pointerdown',unlock);
+document.addEventListener('keydown',unlock);
 
-/* soft transition whoosh (only while ambience is on) */
+/* soft transition whoosh (only while sound is on) */
 function whoosh(){
- if(!amb||!AC)return;
+ if(!AC||!musicOn||!unlocked)return;
  const ac=AC,t=ac.currentTime,len=ac.sampleRate*0.4;
  const b=ac.createBuffer(1,len,ac.sampleRate),dt2=b.getChannelData(0);
  for(let i=0;i<len;i++)dt2[i]=(Math.random()*2-1)*(1-i/len);
@@ -728,8 +814,10 @@ const counter=document.getElementById('counter'),bar=document.getElementById('ba
 function go(i,anim=true){
  closeSheet();
  const t=Math.max(0,Math.min(N_SLIDES-1,i));
- if(t!==idx&&anim)whoosh();
+ const changed=t!==idx;
+ if(changed&&anim)whoosh();
  idx=t;
+ if(changed)playFor(idx);
  track.style.transition=anim?"transform .35s cubic-bezier(.22,.9,.3,1)":"none";
  track.style.transform=`translateX(${-idx*W()}px)`;
  counter.textContent=(idx+1)+" / "+N_SLIDES;
