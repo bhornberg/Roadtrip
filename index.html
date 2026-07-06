@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NY → SF Grand Tour · Swipe Deck</title>
+<style>
+:root{--asphalt:#26221C;--paper:#F2F4EF;--mesa:#C1502E;--pine:#37604C;--gold:#E3A73C;--ink:#5C564C}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:#14120E;color:#fff;
+  font-family:"Avenir Next","Segoe UI",system-ui,-apple-system,sans-serif}
+.display{font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif}
+
+#deck{position:fixed;inset:0;touch-action:pan-y}
+#track{display:flex;height:100%;will-change:transform}
+.slide{position:relative;width:100vw;height:100%;flex-shrink:0;overflow:hidden}
+.art{position:absolute;inset:0}
+.art svg{width:100%;height:100%;position:absolute;inset:0}
+img.photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s}
+img.photo.ok{opacity:1}
+.shade{position:absolute;inset:0;background:linear-gradient(to top,rgba(10,8,5,.92) 0%,rgba(10,8,5,.55) 34%,rgba(10,8,5,0) 62%)}
+
+.num{position:absolute;top:calc(12px + env(safe-area-inset-top));left:16px;z-index:5;
+  background:#fff;color:var(--asphalt);border:2.5px solid var(--asphalt);
+  border-radius:9px 9px 15px 15px;padding:7px 12px 8px;text-align:center;line-height:1.05;
+  box-shadow:0 4px 14px rgba(0,0,0,.4)}
+.num b{display:block;font-size:20px}
+.num span{font-size:8.5px;letter-spacing:.14em;font-weight:800;color:var(--mesa)}
+
+.info{position:absolute;left:0;right:0;bottom:0;z-index:4;padding:18px 20px calc(20px + env(safe-area-inset-bottom));
+  text-shadow:0 1px 10px rgba(0,0,0,.6)}
+.tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.tag{font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;
+  padding:4px 10px;border-radius:20px;text-shadow:none}
+.tag.city{background:#DCE7F2;color:#2A3A4D}
+.tag.country{background:#DDEBE1;color:#2C4F3B}
+.tag.road{background:#F6EEDD;color:#7a5c14}
+.tag.work{background:var(--gold);color:#3d2c05}
+.date{font-size:11.5px;letter-spacing:.18em;font-weight:800;color:var(--gold);margin-bottom:4px}
+.info h2{font-size:clamp(24px,6vw,40px);line-height:1.05;font-weight:600}
+.meta{margin-top:7px;font-size:14px}
+.meta b{color:#8FD4A8}
+.drive{font-size:12.5px;opacity:.85;margin-top:3px}
+.note{font-size:13.5px;line-height:1.45;margin-top:9px;max-width:60ch;opacity:.95}
+.stay{font-size:13px;margin-top:8px}
+.stay b{color:#F2C078}
+.cost{display:inline-block;margin-top:9px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.35);
+  backdrop-filter:blur(4px);border-radius:7px;padding:6px 11px;font-size:13px;font-weight:700}
+.links{margin-top:11px;display:flex;gap:18px;flex-wrap:wrap}
+.links a{color:#FFB48A;font-weight:800;font-size:13.5px;text-decoration:none}
+
+/* nav */
+#hud{position:fixed;top:calc(12px + env(safe-area-inset-top));right:14px;z-index:20;display:flex;gap:8px;align-items:center}
+#counter{font-size:12.5px;font-weight:800;letter-spacing:.06em;background:rgba(0,0,0,.45);
+  border:1px solid rgba(255,255,255,.3);border-radius:20px;padding:6px 12px;backdrop-filter:blur(4px)}
+.navbtn{position:fixed;top:50%;transform:translateY(-50%);z-index:20;width:42px;height:42px;
+  border-radius:50%;border:1px solid rgba(255,255,255,.4);background:rgba(0,0,0,.35);
+  color:#fff;font-size:20px;font-weight:800;cursor:pointer;backdrop-filter:blur(4px)}
+#prev{left:10px}#next{right:10px}
+.navbtn:active{background:rgba(255,255,255,.25)}
+#bar{position:fixed;left:0;bottom:0;height:4px;background:var(--gold);z-index:25;transition:width .25s ease}
+.hint{position:fixed;bottom:calc(8px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);
+  z-index:20;font-size:10.5px;letter-spacing:.1em;opacity:.55;text-transform:uppercase;font-weight:700;pointer-events:none}
+
+/* cover & budget */
+.cover{display:flex;flex-direction:column;justify-content:center;padding:28px;position:relative;z-index:3;height:100%}
+.cover .eyebrow{display:inline-block;align-self:flex-start;font-size:11px;letter-spacing:.22em;text-transform:uppercase;
+  color:#fff;font-weight:800;border:1.5px solid var(--gold);color:var(--gold);border-radius:3px;padding:4px 10px;margin-bottom:16px}
+.cover h1{font-size:clamp(32px,8vw,58px);line-height:1.02;font-weight:600;max-width:14ch}
+.cover h1 em{font-style:italic;color:#8FD4A8}
+.cover p{margin-top:14px;font-size:15px;max-width:52ch;opacity:.9}
+.stats{display:flex;flex-wrap:wrap;gap:22px;margin-top:22px}
+.stat b{display:block;font-size:22px}
+.stat span{font-size:10px;letter-spacing:.14em;text-transform:uppercase;opacity:.7}
+.budget{padding:24px 22px;overflow-y:auto;height:100%;position:relative;z-index:3;-webkit-overflow-scrolling:touch}
+.budget h2{font-size:clamp(26px,6vw,38px);margin:8px 0 4px}
+.budget .sub{opacity:.8;font-size:13.5px;margin-bottom:16px}
+.brow{display:flex;justify-content:space-between;gap:14px;padding:9px 0;font-size:14px;
+  border-bottom:1px dashed rgba(255,255,255,.25)}
+.brow b{white-space:nowrap;font-variant-numeric:tabular-nums}
+.total{display:flex;justify-content:space-between;padding:12px 0;margin-top:6px;
+  border-top:2px solid var(--gold);font-weight:800;font-size:16px}
+.bwarn{background:rgba(227,167,60,.15);border:1px solid rgba(227,167,60,.5);border-radius:8px;
+  padding:12px 14px;font-size:13px;margin-top:16px;line-height:1.5}
+@media (prefers-reduced-motion:reduce){#track{transition:none!important}}
+</style>
+</head>
+<body>
+<div id="deck">
+  <div id="track"></div>
+</div>
+<div id="hud"><div id="counter">1 / 30</div></div>
+<button class="navbtn" id="prev" aria-label="Previous">‹</button>
+<button class="navbtn" id="next" aria-label="Next">›</button>
+<div id="bar"></div>
+<div class="hint">Swipe or use arrows · tell me "slide 17" to change it</div>
+
+<script>
+/* ---------- poster scenes (offline fallbacks) ---------- */
+function seeded(s){return()=>{s=(s*9301+49297)%233280;return s/233280}}
+const CITY_PALS=[["#1B2A41","#3C5A80","#F2B04C"],["#2E3B4E","#5E7B99","#E8C97A"],["#3A2B4D","#7A567F","#F0A35E"],["#31404A","#5F7885","#EDBE6B"],["#160F2E","#4A2A7A","#FF9DE0"],["#22333B","#5E8B7E","#F4D06F"]];
+function sceneCity(p=0,seed=7){const [t,b,sun]=CITY_PALS[p%CITY_PALS.length];const r=seeded(seed+p*13);let s="";
+ for(let x=0;x<400;){const w=18+r()*36,h=60+r()*150,y=300-h;
+  s+=`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#12141A" opacity="${.85+r()*.15}"/>`;
+  for(let wy=y+8;wy<292;wy+=14){if(r()>.45)s+=`<rect x="${x+4+r()*(w-10)}" y="${wy}" width="3.5" height="5" fill="${sun}" opacity="${.5+r()*.5}"/>`}
+  x+=w+4+r()*8}
+ return `<svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="c${p}${seed}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${t}"/><stop offset="1" stop-color="${b}"/></linearGradient></defs><rect width="400" height="300" fill="url(#c${p}${seed})"/><circle cx="320" cy="80" r="26" fill="${sun}"/>${s}<rect y="292" width="400" height="8" fill="#0C0E12"/></svg>`}
+function sceneHills(seed=3){const r=seeded(seed);let o="";["#87A98F","#5F8A6C","#3F6B51","#2C4F3B"].forEach((c,i)=>{let d=`M0 ${170+i*32}`;for(let x=0;x<=400;x+=40)d+=` Q ${x+20} ${150+i*32-(10+r()*34)} ${x+40} ${170+i*32}`;d+=" L400 300 L0 300 Z";o+=`<path d="${d}" fill="${c}"/>`});
+ return `<svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="h${seed}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F6E3B4"/><stop offset="1" stop-color="#D9C08A"/></linearGradient></defs><rect width="400" height="300" fill="url(#h${seed})"/><circle cx="90" cy="70" r="30" fill="#F2A65A"/>${o}</svg>`}
+function sceneDesert(white=false){const sky=white?["#BFE0F0","#8FC6E8","#F6FBFF"]:["#F7C86B","#C65A3C","#FBE2A6"];const butte=white?"#E9F2F7":"#9E3D22",butte2=white?"#D6E6F0":"#B85433",gr=white?"#F6FBFF":"#7E2F1B";
+ let b="";[[40,140,60],[150,110,90],[300,150,70]].forEach(([x,y,w])=>{b+=`<path d="M${x-w/2} 240 L${x-w/2+10} ${y} L${x+w/2-10} ${y} L${x+w/2} 240 Z" fill="${butte}"/><path d="M${x-w/2+10} ${y} L${x+w/2-10} ${y} L${x+w/2-16} ${y+14} L${x-w/2+16} ${y+14} Z" fill="${butte2}"/>`});
+ if(white)b=`<path d="M-20 240 Q 100 190 220 235 T 420 225 L420 300 L-20 300 Z" fill="#EDF5FA"/><path d="M-20 262 Q 140 225 420 255 L420 300 L-20 300 Z" fill="#DCEAF3"/>`;
+ return `<svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="d${white}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${sky[0]}"/><stop offset="1" stop-color="${sky[1]}"/></linearGradient></defs><rect width="400" height="300" fill="url(#d${white})"/><circle cx="200" cy="120" r="46" fill="${sky[2]}" opacity=".95"/>${b}<rect y="238" width="400" height="62" fill="${gr}" opacity="${white?0:1}"/></svg>`}
+function sceneCanyon(){let s="";["#C86A3C","#B05430","#94422A","#7A3423","#5F281C"].forEach((c,i)=>{s+=`<path d="M0 ${120+i*36} C 80 ${100+i*36}, 140 ${150+i*36}, 220 ${125+i*36} S 360 ${105+i*36}, 400 ${135+i*36} L400 300 L0 300 Z" fill="${c}"/>`});
+ return `<svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="cy" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FBD9A0"/><stop offset="1" stop-color="#F0A867"/></linearGradient></defs><rect width="400" height="300" fill="url(#cy)"/><circle cx="330" cy="62" r="24" fill="#FFF3D6"/>${s}</svg>`}
+function sceneCoast(bridge=false){const gg=bridge?`<g stroke="#C1502E" fill="none"><path d="M60 210 L60 120 M300 210 L300 120" stroke-width="10"/><path d="M0 158 Q 60 118 180 168 Q 300 118 400 150" stroke-width="5"/><path d="M0 190 H400" stroke-width="7"/></g>`:"";
+ return `<svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="o${bridge}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F9D7A8"/><stop offset="1" stop-color="#E9A97E"/></linearGradient><linearGradient id="se${bridge}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3E7C8A"/><stop offset="1" stop-color="#25525C"/></linearGradient></defs><rect width="400" height="300" fill="url(#o${bridge})"/><circle cx="110" cy="96" r="30" fill="#FBEFD2"/><rect y="210" width="400" height="90" fill="url(#se${bridge})"/>${gg}</svg>`}
+function sceneFarm(){return `<svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="f" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#CFE3EF"/><stop offset="1" stop-color="#F3E9C8"/></linearGradient></defs><rect width="400" height="300" fill="url(#f)"/><circle cx="320" cy="66" r="26" fill="#F6D77E"/><path d="M0 200 Q 120 168 230 196 T 400 186 L400 300 L0 300 Z" fill="#8FB56F"/><path d="M0 236 Q 140 210 400 232 L400 300 L0 300 Z" fill="#6E9950"/><rect x="92" y="150" width="86" height="56" fill="#A63A2B"/><path d="M84 152 L135 118 L186 152 Z" fill="#7E2A1F"/><rect x="124" y="172" width="24" height="34" fill="#5E1F16"/></svg>`}
+function scenePeaks(){return `<svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="p" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#BFD5E6"/><stop offset="1" stop-color="#E8E2CF"/></linearGradient></defs><rect width="400" height="300" fill="url(#p)"/><path d="M-20 260 L110 70 L180 200 L250 60 L330 190 L420 120 L420 300 L-20 300 Z" fill="#8B909B"/><path d="M110 70 L140 120 L122 118 L108 132 L92 116 Z" fill="#F4F6F8"/><path d="M250 60 L282 120 L262 114 L248 130 L232 112 Z" fill="#F4F6F8"/><path d="M-20 300 L60 210 L150 300 Z" fill="#31543F"/><path d="M120 300 L220 200 L330 300 Z" fill="#3E6B4E"/></svg>`}
+function sceneFor(s){switch(s.scene){case"city":return sceneCity(s.pal||0,(s.gm||"x").length);case"hills":return sceneHills((s.n||"").length);case"desert":return sceneDesert(false);case"dunes":return sceneDesert(true);case"canyon":return sceneCanyon();case"coast":return sceneCoast(false);case"bridge":return sceneCoast(true);case"farm":return sceneFarm();case"peaks":return scenePeaks();default:return sceneHills(5)}}
+
+/* ---------- photos (load when environment allows; posters otherwise) ---------- */
+const P={
+nyc:"https://lh3.googleusercontent.com/place-photos/AJRVUZPxI-WFFDmKRqJ5f9Mvg9DfusyVlJIVLipcRVtcQqp8RfmwmxXp2a52b3brMURlXJBXG-r1zoVSUk5dSs7bXG3nF8noDNIMCwoBzwvfLKfjmyFRJEvqHlhRnyNjLctAtoVUNV980LmW4Ks52Q=s4800-w800-h600",
+amish:"https://lh3.googleusercontent.com/place-photos/AJRVUZPero7Ez2VQlO87vU1OVRGa_-SANuwdGM1MWnApyP5y4FYe3G5TvoWIgOJQcSF5e7RDvzmBD-NESzRDyeYLbqSw8HzkBESXouKoRzZHSayFewYnD8BIEdcUa91G7krIzUvKY3TuN-6ANo3y=s4800-w800-h600",
+dc:"https://lh3.googleusercontent.com/place-photos/AJRVUZNud2Gc9B0iMOccKso9ekSrijuC8BHWujdXk7c8n_-tss3j8r7GJaDemWBGCl8YUBPX0QW49QgrAEudPobmhiZrdJwB0blC25yQQFXlWTZ-4D_6qPqVcFfERJ4FvqpTqgRuzq0wYTVsQ9dg=s4800-w800-h600",
+innlw:"https://lh3.googleusercontent.com/place-photos/AJRVUZP5C5rfTM4EdSnCyRBJCng-3o3LJZWjxenkKUKTeStR91s-Po30TlAU5CVt5dC338ZAYefIw5YogCmndGzOBeGqKRl2jZhNa3CSBCwxmc1VnpNSpuTyXxCF0iSw3_W20WJj7z0uJbzD1X-5_Q=s4800-w800-h600",
+biltmore:"https://lh3.googleusercontent.com/place-photos/AJRVUZO_sMJ2k982tEBN9HrQTmoXi-v89VrHxjenWkLFCcWhV5o6agXq961f0KX9i5b0tfPvuY5iB9AKEnjQIvT-4XdRub0DQ_xSBTMfqjY4NsiQHEeoLMUldb2AZCbf384z0A6Dar8o1KsnV8TCGto=s4800-w800-h600",
+cades:"https://lh3.googleusercontent.com/place-photos/AJRVUZPmSfPm9hgh0xAIAKn0J9nvJqekfdRaRjqpnRQuvK41PR7FsI-AaIIap3-Nn3VxzxFLhIYbFSxXlfyeaPqvNRSrQXtkeE7FMlX9GMm4R7HWaY4p9luzL69x5WqKMqn_wvSTjfnsjGYRZrGALA=s4800-w800-h600",
+honky:"https://lh3.googleusercontent.com/place-photos/AJRVUZOZNVKkCMjnMeq05LIJXchgTHdHI0c7qBgpEoge3Jn4z2V8o96OQhkP3JZDfW79KeAva2MoLXq0HofzBlwKFAOmYpaQFmcFR81LX65jickc3uCP9HaPohgmF5xJ-XPbEStuhVhM7SFxEHOmPtA=s4800-w576-h306",
+graceland:"https://lh3.googleusercontent.com/place-photos/AJRVUZMt1PRnZgj11I9boQvDV58nFREORgegLJHF5saAGuxUOyGBFIpwil3lAzeSyHWdYmIsNrlEC1lQKYQM6Ee_DV4Cx50oBB-SWahuhWOcorGul5oQtkcB946JdztiTOALhbi0Gf2alFyQoUb3CA=s4800-w800-h600",
+nola:"https://lh3.googleusercontent.com/place-photos/AJRVUZPz5hy3GzYUMJeIs5bNGyMwwFcmY51avSrynde0dOZ8Q3ugWz78OPaIvlYlpxNJJIH-OVovtYPkD9qJU-NjN2EWzu12AuSYGBivwGRVrpk8xgx_MPOr7YfSn3_NfgSJj0cI-17UEPYdyQhhdA=s4800-w800-h600",
+soco:"https://lh3.googleusercontent.com/place-photos/AJRVUZMEFmUGSp36ICCLP_tt2fx9g5jbNS21-l749rvi_z49sZZ-qPpLKvIpWgT0INm4_pitADbYhzsX3hB8jO9mXDb94LYjvB00zHN2JHu4KUtLAzWfPS1N3W1dVf_V9Pal2yOKfDs_jYn7hI7fNg=s4800-w800-h600",
+fbg:"https://lh3.googleusercontent.com/place-photos/AJRVUZOldqSjMyS-mJxn-o8hCSOUvy6spBDTbvBx1Ql2MAGqyy1EYMDShMLuMhqW9W-x6H1Yh0UaFfBNQaQiQVQCbncal5Thjduh4uwOm4wJWUs7tdglqOGL_xs4HsJuxMX1MvFO0gcOoyXUaYUInQ=s4800-w800-h600",
+prada:"https://lh3.googleusercontent.com/place-photos/AJRVUZPtjM1dgSkbDgtgVYhIsDjG8DMORrfGINfmUZfo3XowJWPDz7UEf3-m4FywkM3xkAtqy0FCVG3y_cnBTOXtOgutuWxEeDcVMclBjOdnYFu5xdffAELrJ3t72cw3T4Q2ZoPTMIsaAEG82kGLDpcMlvFQ1g=s4800-w800-h600",
+whitesands:"https://lh3.googleusercontent.com/place-photos/AJRVUZPRSunHAigJst5fn6tkbm3xnHaz6VomZinw_f88WjC4gZIE44jjqoiios9f_nTTpWfOSBp3E50W9Hfy-gTBKAkfMFzTM9Unig2svFTs44ihhgxM8UJJLvRaZMrhmw6_gNpUB-8dzgKDBMq_nQ=s4800-w800-h600",
+bishops:"https://lh3.googleusercontent.com/place-photos/AJRVUZOgxD3CMlWHnPM5L35jKNsAcg6No6b3VVOJP2LYj4avtqa21G58XpswU_aoxBDlx4mGxrAQtMU8dZnEfPJYGUSYXfVKwncYG6g43X6dVq9-NkiRucgo9Z-iALCTScEC2klaueRNvVWoW5JP9A=s4800-w800-h600",
+mather:"https://lh3.googleusercontent.com/place-photos/AJRVUZM8EbEtd_StTr_JjgS1BI6pD9ubaWFm-xmIGH95nOUfptf4_NO-kdzsemRH97-ZdBHexY24shn-CiuXntAw-CnVMz737R7kC5n9jS1djxKW5koBH6TuISPP7MgwKRVgnouiKaDDHVih7m8XfnNoWmSluA=s4800-w800-h600",
+monval:"https://lh3.googleusercontent.com/place-photos/AJRVUZNKO7kCmZ4eOas-13kmnH2APbf6gj7xdobfSdfcrV6XDIOLDJvjweRwtFeMfqAwijj5RPkSktof4F3J-nfTU_FGBcRb5cHd2LNDRsqjYki8OA4xWr_jOE302g1GTVQZcwiZhLciZ-g73veGT7h-kHVw4w=s4800-w800-h600",
+sorrel:"https://lh3.googleusercontent.com/place-photos/AJRVUZOUb7KDYUKRpzNmEb3rj0DYhwrHnkNiihyPS9-C0rAuITVzx1ffFIvnpLJRMuDKcJejvVOut7QEbHQeUfyXCy3mPNeHLd7uhUS5KeyM0U8kDJq5KNwLavL_LUDMG2B3EdRfu9QsloNVV-oWtw=s4800-w600-h400",
+zion:"https://lh3.googleusercontent.com/place-photos/AJRVUZPGdSPuXYBgGabZhx124snef9Ee_sJ2vkyUnl7jPfFdGw9ueEvF4zOxcnbQunm78niP298L9QyvYeTqR8Rd4yu7dGxUTnPbktLcXRRzzOAYgk-NocaWsfEcNOVhqCSmJ6pemvhnGoKt8WNDvWRbRswLGA=s4800-w800-h600",
+bellagio:"https://lh3.googleusercontent.com/place-photos/AJRVUZMwLS3gczNqqK2wmIen3j-aa91kqs784k7QlBcjjpaiONTwEacofdiHCXncMZS9AzGFOmBmMUftv5b4tPUH1bphN1L7pZ3W9scvOqUf0feT1wrcSlNZg7Fl1yKsu8cQQRoc6bMiT4ZN-OG9UQ=s4800-w800-h546",
+lajolla:"https://lh3.googleusercontent.com/place-photos/AJRVUZODNz83aCUZsyBE2Xv4iPilbnuz41S5KRYgwL-8uyq2d6Oy6iuv6loiykBTjnAGavgR8uWNVBpQlL7wb5KLSEETqdFp06JwUeZ7tRoq_QQNWQhSm5B7blK24I_613pVYCJLJcbJBo9LJkXfId-Fv6jX=s4800-w800-h600",
+matador:"https://lh3.googleusercontent.com/place-photos/AJRVUZP1gxtX4_GK1thT2wpBWml0XEN3AYDddd6_9N8PAWBDwSLVXsDRAHsV1YuUoVo2xsjxbwCKqnmJ9_yWK92TIplhJWxwlMmRqtvw6ASkmmY8SHanhXJ1x0BVa-h0lXPd23Xl2BC6hacEbKfztQ=s4800-w800-h600",
+stearns:"https://lh3.googleusercontent.com/place-photos/AJRVUZNWTiLao5R8_bU4nRNvF8_Fy904g7iaYoqtzNxDZFOy7fucovGfo5tkXNHWPKP4O1SWa1CrLODfVuaH3hbYaYhamDPiBL8nV-bpL25Q09XSDqGNJKs8aHPkj6QJR-JnDUXoto9SsB-GdLC4VA=s4800-w800-h600",
+sherman:"https://lh3.googleusercontent.com/place-photos/AJRVUZM1wG8CGJUjMsyu5e_he2EpNd9XQn-FRcpgNQ_lhKbQmO7oOvR78mtVD2WSNLS1P7cpn2gEHKOlRGl9uXpP3Qh4_cThWRvNhis17n4g_HCSOjSnZ7rcYwR8UdPQhMH8iyhDUtASx6sxNP_O1Q=s4800-w800-h600",
+evergreen:"https://lh3.googleusercontent.com/place-photos/AJRVUZMoXWZ_X04H09U1vfm9x1YfV31GmSe7KvGCx63W-gIFjYZSOP9baOy_Ilplqd7kr_st1D89ODw45do10mVYfW_Kt02dPaMK3igYQEfoYCwuRrLte_Z9ZKZTO7nDA6SLu_m2I8AAVmcQ02ahvSw=s4800-w800-h600",
+cvr:"https://lh3.googleusercontent.com/place-photos/AJRVUZMgkmvMb8osCbJK7T9pv7QsBqwd2eVpkjHrIZoYxzAXh2ViWgYZl1btuHwipx1qrUQaNNwneOVDtSZ-H6rfAmn9RfqImgZO2Bo66oxzJkHmaaanjtzVWmpW_VuthL2hAoTpTAA4DYUdul4J=s4800-w800-h600",
+napa:"https://lh3.googleusercontent.com/place-photos/AJRVUZNGicHKkujb0OoBKNyELDRghAZO-g1gfKeDasZTJPmgcbPYpevUFSgOl4wxdQqiFJbDE7DH-oz1m3Po2KOJBAsSXpXQSrZrVoNyctZPFDzmyj5daqPLCaiY6DSzeZtEajBBdFR3Pbeo0wwVBw=s4800-w800-h600",
+gg:"https://lh3.googleusercontent.com/place-photos/AJRVUZOddU7hxuTElYoWH3uf1SnBs5ZvWu6O0Wk-twwAHafS9fFpoc_i6QXyNTdDM41vViJykhz5BD1hudQe06HwWISMqSQSNb9qYOA6hULIE9ZuP43jIsWUG24Wl01yWxc1VMT-AhCxyNWhXlEMJO8=s4800-w800-h600",
+poblanos:"https://lh3.googleusercontent.com/place-photos/AJRVUZOTuS1pXs4BpssaXYDUMAStCSp9qPrawWDLaswbPeleLzb4wiOpgM3-WXUd3Y7mlDFE09569uNeF4MyJtk5ottqQWjqNKO6LP3zvFLNoJiMfFIPr0qoA_vwncluKquH5SBiCHksZZmk9rTieg=s4800-w800-h600"
+};
+
+/* ---------- itinerary data ---------- */
+// type: c city, k countryside, r road break · work: true = work day included
+const STOPS=[
+{n:"New York City",type:"c",scene:"city",pal:0,img:P.nyc,days:"DAY 1–3",dates:"Apr 20–23",nights:3,work:true,drive:null,
+ note:"Land and dive in: High Line, Central Park, a Broadway show. One work day with hotel WiFi while she owns SoHo and Fifth Avenue.",
+ stay:"Boutique hotel, West Village / NoMad",cost:"≈ $900 (3 × $300)",gm:"New York City"},
+{n:"Amish Country · Lancaster, PA",type:"k",scene:"farm",img:P.amish,days:"DAY 4",dates:"Apr 23–24",nights:1,drive:"2.5 h · ~260 km",
+ note:"One night on a working Amish farm — horses, buggies, gas lamps, giant farm breakfast.",
+ stay:"Amish Farm Stay, Gordonville",cost:"≈ $170",web:"https://www.amishfarmstay.com/",gm:"Amish Farm Stay Gordonville PA"},
+{n:"Washington, DC",type:"c",scene:"city",pal:3,img:P.dc,days:"DAY 5–7",dates:"Apr 24–27",nights:3,work:true,drive:"2.5 h · ~230 km",
+ note:"Free world-class Smithsonian museums, the monuments at dusk. Work day two — Georgetown's boutiques are hers.",
+ stay:"Hotel near Dupont Circle or Georgetown",cost:"≈ $780 (3 × $260)",gm:"Washington DC"},
+{n:"Blue Ridge · Sperryville, VA",type:"k",scene:"hills",img:P.innlw,days:"DAY 8–9",dates:"Apr 27–29",nights:2,drive:"1.5 h · ~120 km",
+ note:"Skyline Drive through spring-green Shenandoah. Optional splurge: dinner at the 3-Michelin-star Inn at Little Washington.",
+ stay:"Country inn near Sperryville",cost:"≈ $420 (2 × $210)",web:"https://www.theinnatlittlewashington.com/",gm:"Sperryville VA"},
+{n:"Asheville, NC",type:"c",scene:"city",pal:1,img:P.biltmore,days:"DAY 10–11",dates:"Apr 29–May 1",nights:2,drive:"5.5 h · ~510 km ⚠",
+ note:"Artsy mountain city: the Biltmore Estate (America's largest house), galleries, great restaurants.",
+ stay:"Historic B&B, Montford district",cost:"≈ $440 (2 × $220)",gm:"Asheville NC"},
+{n:"Great Smoky Mountains, TN",type:"k",scene:"hills",img:P.cades,days:"DAY 12–13",dates:"May 1–3",nights:2,drive:"2 h · ~160 km",
+ note:"Cades Cove at dawn — black bears, deer, morning mist. Luxury upgrade nearby: Blackberry Farm.",
+ stay:"Lodge or cabin in Townsend",cost:"≈ $480 (2 × $240)",web:"https://www.blackberryfarm.com/",gm:"Townsend TN"},
+{n:"Nashville, TN",type:"c",scene:"city",pal:2,img:P.honky,days:"DAY 14–16",dates:"May 3–6",nights:3,work:true,drive:"3 h · ~290 km",
+ note:"Honky-tonks on Broadway, hot chicken, the Opry. Work day three; 12South boutiques for her.",
+ stay:"Hotel in The Gulch or Germantown",cost:"≈ $750 (3 × $250)",gm:"Nashville TN"},
+{n:"Memphis, TN",type:"c",scene:"city",pal:2,img:P.graceland,days:"DAY 17",dates:"May 6–7",nights:1,drive:"3 h · ~340 km",
+ note:"Graceland in the afternoon, blues on Beale Street at night. One night is the right dose.",
+ stay:"The Peabody or downtown hotel",cost:"≈ $230",gm:"Memphis TN"},
+{n:"New Orleans, LA",type:"c",scene:"city",pal:4,img:P.nola,days:"DAY 18–20",dates:"May 7–10",nights:3,drive:"5.5 h · ~630 km ⚠",
+ note:"French Quarter balconies, live jazz on Frenchmen Street, beignets at Café du Monde, a streetcar ride. Unlike anywhere else in America.",
+ stay:"Boutique hotel, French Quarter edge",cost:"≈ $750 (3 × $250)",gm:"New Orleans French Quarter"},
+{n:"Austin, TX",type:"c",scene:"city",pal:5,img:P.soco,days:"DAY 21–23",dates:"May 10–13",nights:3,work:true,drive:"7 h · ~820 km ⚠⚠ the one big day",
+ note:"Live music capital: BBQ at Franklin or la Barbecue, bats at Congress Bridge. Work day four while she does South Congress.",
+ stay:"Hotel on South Congress",cost:"≈ $720 (3 × $240)",gm:"Austin TX"},
+{n:"Fredericksburg · Texas Hill Country",type:"k",scene:"hills",img:P.fbg,days:"DAY 24–25",dates:"May 13–15",nights:2,drive:"1.5 h · ~125 km",
+ note:"Founded by German settlers in 1846 — you can literally order Schnitzel and Weißbier on Main Street. Wineries, wildflowers, peach orchards.",
+ stay:"B&B or guesthouse in town",cost:"≈ $400 (2 × $200)",gm:"Fredericksburg TX"},
+{n:"Marfa, TX",type:"r",scene:"desert",img:P.prada,days:"DAY 26",dates:"May 15–16",nights:1,drive:"5 h · ~560 km",
+ note:"Minimalist art town in the middle of nowhere — photo stop at the famous Prada Marfa installation on the way in.",
+ stay:"Hotel Saint George or El Cosmico",cost:"≈ $250",gm:"Marfa TX"},
+{n:"White Sands NP · Las Cruces, NM",type:"k",scene:"dunes",img:P.whitesands,days:"DAY 27",dates:"May 16–17",nights:1,drive:"3.5 h · ~360 km",
+ note:"Walk barefoot on cool, snow-white gypsum dunes at sunset — one of the most surreal places in the country.",
+ stay:"Hotel in Las Cruces",cost:"≈ $160",gm:"White Sands National Park"},
+{n:"Santa Fe, NM",type:"c",scene:"desert",img:P.bishops,days:"DAY 28–30",dates:"May 17–20",nights:3,work:true,drive:"4.5 h · ~450 km",
+ note:"Adobe old town, O'Keeffe Museum, day trip to Taos. Work day five; Canyon Road's 100 galleries for her.",
+ stay:"Adobe inn near the Plaza · upgrade: Bishop's Lodge",cost:"≈ $780 (3 × $260)",web:"https://auberge.com/bishops-lodge/",gm:"Santa Fe NM"},
+{n:"Grand Canyon South Rim, AZ",type:"k",scene:"canyon",img:P.mather,days:"DAY 31",dates:"May 20–21",nights:1,drive:"6 h · ~640 km ⚠ lavender-farm lunch at Los Poblanos",
+ note:"Sunset at Hopi Point, sunrise at Mather Point. Sleeping on the rim makes one night feel like two.",
+ stay:"Bright Angel / Maswik Lodge — book early!",cost:"≈ $280",web:"https://www.grandcanyonlodges.com/",gm:"Grand Canyon South Rim"},
+{n:"Monument Valley, AZ/UT",type:"k",scene:"desert",img:P.monval,days:"DAY 32",dates:"May 21–22",nights:1,drive:"4.5 h · ~380 km · Horseshoe Bend stop",
+ note:"Sunrise over the Mittens from your own balcony — every room at The View faces the monuments. From $277 + $20/night amenity fee.",
+ stay:"The View Hotel",cost:"≈ $320",web:"https://monumentvalleyview.com/",gm:"The View Hotel Monument Valley"},
+{n:"Moab, UT · Arches & Canyonlands",type:"k",scene:"canyon",img:P.sorrel,days:"DAY 33–34",dates:"May 22–24",nights:2,drive:"2.5 h · ~240 km",
+ note:"Delicate Arch at golden hour, Island in the Sky at sunrise. Upgrade: Sorrel River Ranch on the Colorado.",
+ stay:"Design inn in Moab",cost:"≈ $520 (2 × $260)",web:"https://www.sorrelriver.com/",gm:"Moab UT"},
+{n:"Salt Lake City & Great Salt Lake, UT",type:"c",scene:"city",pal:3,days:"DAY 35",dates:"May 24–25",nights:1,drive:"3.5 h · ~380 km",
+ note:"Your pick! Sunset at Great Salt Lake State Park — float-in-the-water strange and beautiful — plus a proper city evening downtown.",
+ stay:"Downtown SLC hotel",cost:"≈ $180",gm:"Great Salt Lake State Park"},
+{n:"Zion National Park, UT",type:"k",scene:"canyon",img:P.zion,days:"DAY 36–37",dates:"May 25–27",nights:2,drive:"4.5 h · ~490 km",
+ note:"Wade the Narrows between 300-m walls (rent neoprene socks in Springdale — May water is cold but doable).",
+ stay:"Lodge in Springdale · alt: Under Canvas tents",cost:"≈ $560 (2 × $280)",web:"https://www.undercanvas.com/camps/zion/",gm:"Springdale UT"},
+{n:"Las Vegas, NV",type:"c",scene:"city",pal:4,img:P.bellagio,days:"DAY 38–39",dates:"May 27–29",nights:2,work:true,drive:"2.5 h · ~260 km",
+ note:"Work day six — Vegas hotels have the fastest WiFi on the trip; she gets the Forum Shops and the pool. Then a show and the Bellagio fountains.",
+ stay:"Vdara / Waldorf Astoria, midweek",cost:"≈ $360 (2 × $180)",gm:"Las Vegas Strip"},
+{n:"San Diego, CA",type:"c",scene:"coast",img:P.lajolla,days:"DAY 40–41",dates:"May 29–31",nights:2,drive:"5 h · ~530 km",
+ note:"Sea lions at La Jolla Cove, Balboa Park, the best fish tacos of your life, sunset at Sunset Cliffs.",
+ stay:"Hotel in La Jolla or Little Italy",cost:"≈ $560 (2 × $280)",gm:"La Jolla San Diego"},
+{n:"Malibu, CA",type:"k",scene:"coast",img:P.matador,days:"DAY 42–43",dates:"May 31–Jun 2",nights:2,drive:"2.5 h · ~230 km",
+ note:"El Matador's sea-stack coves, Zuma sands, whales off Point Dume. Verified prices: Surfrider runs $450–650+ in season — it's the splurge; Santa Monica is the smart alternative.",
+ stay:"The Surfrider (splurge) or Santa Monica boutique",cost:"≈ $700–900 (2 nights)",web:"https://www.thesurfridermalibu.com/",gm:"Malibu CA"},
+{n:"Santa Barbara, CA",type:"c",scene:"coast",img:P.stearns,days:"DAY 44",dates:"Jun 2–3",nights:1,drive:"1.5 h · ~130 km",
+ note:"The 'American Riviera': Spanish-mission old town, Stearns Wharf, wine-tasting rooms on State Street.",
+ stay:"Hotel in the Funk Zone",cost:"≈ $300",gm:"Santa Barbara CA"},
+{n:"Sequoia NP · Three Rivers, CA",type:"k",scene:"peaks",img:P.sherman,days:"DAY 45",dates:"Jun 3–4",nights:1,drive:"4 h · ~380 km",
+ note:"Stand under General Sherman — the largest living tree on Earth. Humbling in a way photos can't show.",
+ stay:"Lodge in Three Rivers",cost:"≈ $200",gm:"Three Rivers CA"},
+{n:"Yosemite, CA",type:"k",scene:"peaks",img:P.evergreen,days:"DAY 46–47",dates:"Jun 4–6",nights:2,drive:"3.5 h · ~300 km",
+ note:"Early June = waterfalls still thundering at near-peak flow. Tunnel View, valley loop, s'mores at the lodge fire.",
+ stay:"Evergreen Lodge cabins ($240–415 verified)",cost:"≈ $640 (2 × $320)",web:"https://www.evergreenlodge.com/",gm:"Evergreen Lodge Yosemite"},
+{n:"Carmel & Big Sur, CA",type:"k",scene:"coast",img:P.cvr,days:"DAY 48–49",dates:"Jun 6–8",nights:2,drive:"4 h · ~340 km",
+ note:"Bixby Bridge, McWay Falls, sea otters in Monterey Bay, storybook Carmel-by-the-Sea. Check Caltrans for Hwy 1 status.",
+ stay:"Inn in Carmel · upgrade: Carmel Valley Ranch",cost:"≈ $600 (2 × $300)",web:"https://carmelvalleyranch.com/",gm:"Carmel-by-the-Sea CA"},
+{n:"Napa Valley, CA",type:"k",scene:"hills",img:P.napa,days:"DAY 50–51",dates:"Jun 8–10",nights:2,drive:"3 h · ~270 km",
+ note:"Wine-country victory lap: château tastings at Domaine Carneros, balloon ride at dawn if you're feeling it, dinner in Yountville.",
+ stay:"Inn in Napa or Sonoma",cost:"≈ $640 (2 × $320)",gm:"Napa Valley CA"},
+{n:"San Francisco, CA",type:"c",scene:"bridge",img:P.gg,days:"DAY 52–54",dates:"Jun 10–13",nights:3,drive:"1.5 h · ~100 km — drop the car",
+ note:"Golden Gate by bike, Alcatraz (book weeks ahead), North Beach cafés, ferry to Sausalito. Fly home June 13. What a trip.",
+ stay:"Boutique hotel, North Beach / Union Square",cost:"≈ $870 (3 × $290)",gm:"San Francisco CA"}
+];
+const TAGS={c:["city","City"],k:["country","Countryside"],r:["road","Road break"]};
+const N_SLIDES=STOPS.length+2; // cover + stops + budget
+
+/* ---------- build slides ---------- */
+const track=document.getElementById('track');
+function el(html){const d=document.createElement('div');d.innerHTML=html;return d.firstElementChild}
+
+// cover (slide 1)
+track.appendChild(el(`<div class="slide"><div class="art">${sceneCoast(true)}</div><div class="shade"></div>
+ <div class="cover">
+  <span class="eyebrow">Spring 2027 · Apr 20 – Jun 13</span>
+  <h1 class="display">New York → San Francisco. <em>The Grand Tour.</em></h1>
+  <p>54 nights · 28 stops · 15 cities & 8 national parks · 6 built-in work days with fast WiFi · beautiful places get 2–3 nights, pass-throughs get 1.</p>
+  <div class="stats">
+   <div class="stat"><b>~11,700 km</b><span>total route</span></div>
+   <div class="stat"><b>~95 h</b><span>driving · avg 1.8 h/day</span></div>
+   <div class="stat"><b>2</b><span>days over 5.5 h</span></div>
+  </div>
+  <p style="margin-top:22px;font-weight:700;color:#F2C078">Swipe → · give feedback by slide number ("slide 17: one more night!")</p>
+ </div></div>`));
+
+// stops (slides 2..29)
+STOPS.forEach((s,i)=>{
+ const [cls,txt]=TAGS[s.type];
+ const gm="https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(s.gm||s.n);
+ const slide=el(`<div class="slide">
+  <div class="art">${sceneFor(s)}</div>
+  ${s.img?`<img class="photo" alt="">`:""}
+  <div class="shade"></div>
+  <div class="num"><span>SLIDE</span><b>${i+2}</b></div>
+  <div class="info">
+   <div class="tags"><span class="tag ${cls}">${txt}</span>${s.work?`<span class="tag work">💼 Work day incl.</span>`:""}</div>
+   <div class="date">${s.days} · ${s.dates}, 2027</div>
+   <h2 class="display">${s.n}</h2>
+   <div class="meta"><b>${s.nights} night${s.nights>1?"s":""}</b>${s.drive?`<div class="drive">↳ ${s.drive}</div>`:""}</div>
+   <p class="note">${s.note}</p>
+   <p class="stay"><b>Stay:</b> ${s.stay}</p>
+   <span class="cost">${s.cost}</span>
+   <div class="links"><a href="${gm}" target="_blank" rel="noopener">Google Maps →</a>${s.web?`<a href="${s.web}" target="_blank" rel="noopener">Hotel website →</a>`:""}</div>
+  </div></div>`);
+ if(s.img){const im=slide.querySelector('img.photo');im.onload=()=>im.classList.add('ok');im.onerror=()=>im.remove();im.src=s.img;}
+ track.appendChild(slide);
+});
+
+// budget (last slide)
+track.appendChild(el(`<div class="slide"><div class="art">${sceneHills(9)}</div><div class="shade" style="background:rgba(10,8,5,.82)"></div>
+ <div class="budget">
+  <div class="num" style="position:static;display:inline-block;margin-bottom:10px"><span>SLIDE</span><b>${N_SLIDES}</b></div>
+  <h2 class="display">The whole budget</h2>
+  <p class="sub">Two people · 54 nights · Apr 20 – Jun 13, 2027 · hotel rates verified against current prices</p>
+  <div class="brow"><span>Lodging — sum of all 28 stops above</span><b>$13,500–15,000</b></div>
+  <div class="brow"><span>Rental car · 55 days, one-way NYC→SF incl. drop fee & insurance</span><b>$3,600–4,500</b></div>
+  <div class="brow"><span>Fuel · ~11,700 km</span><b>≈ $870</b></div>
+  <div class="brow"><span>National-parks pass, tours, parking</span><b>≈ $450</b></div>
+  <div class="total"><span>Before food</span><span>≈ $18,500–20,800</span></div>
+  <div class="brow"><span>Food for two · casual + a few great dinners</span><b>$4,600–6,200</b></div>
+  <div class="total"><span>All-in</span><span>≈ $23,000–27,000</span></div>
+  <div class="bwarn">Run rate ≈ $430–500/day for two, everything included. Biggest levers: each trimmed week saves ~$3,000; Malibu → Santa Monica saves ~$300; Vegas midweek is nearly free by comparison. April–May is shoulder season = these are realistic, not best-case, numbers.</div>
+  <p style="margin-top:16px;font-size:13px;opacity:.8">Feedback works by slide number — e.g. "slide 9: skip Memphis" or "slide 21: three nights in Malibu please."</p>
+ </div></div>`));
+
+/* ---------- navigation ---------- */
+let idx=0,W=()=>window.innerWidth;
+const counter=document.getElementById('counter'),bar=document.getElementById('bar');
+function go(i,anim=true){
+ idx=Math.max(0,Math.min(N_SLIDES-1,i));
+ track.style.transition=anim?"transform .35s cubic-bezier(.22,.9,.3,1)":"none";
+ track.style.transform=`translateX(${-idx*W()}px)`;
+ counter.textContent=(idx+1)+" / "+N_SLIDES;
+ bar.style.width=((idx+1)/N_SLIDES*100)+"%";
+}
+document.getElementById('prev').onclick=()=>go(idx-1);
+document.getElementById('next').onclick=()=>go(idx+1);
+document.addEventListener('keydown',e=>{if(e.key==="ArrowRight")go(idx+1);if(e.key==="ArrowLeft")go(idx-1)});
+window.addEventListener('resize',()=>go(idx,false));
+
+// swipe
+let startX=null,curX=null,dragging=false;
+const deck=document.getElementById('deck');
+deck.addEventListener('pointerdown',e=>{startX=curX=e.clientX;dragging=true;track.style.transition="none"});
+deck.addEventListener('pointermove',e=>{if(!dragging)return;curX=e.clientX;
+ track.style.transform=`translateX(${-idx*W()+(curX-startX)}px)`});
+function endDrag(){if(!dragging)return;dragging=false;const dx=curX-startX;
+ if(dx<-50)go(idx+1);else if(dx>50)go(idx-1);else go(idx);}
+deck.addEventListener('pointerup',endDrag);deck.addEventListener('pointercancel',endDrag);
+go(0,false);
+</script>
+</body>
+</html>
