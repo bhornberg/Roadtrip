@@ -814,11 +814,15 @@ const player=new Audio();player.loop=true;player.preload="auto";player.volume=0;
 let musicOn=localStorage.getItem('deckMusicOff')!=='1',curTrack=null,fadeT=null,unlocked=false;
 function paintSound(){soundBtn.classList.toggle('on',musicOn)}
 function trackFor(i){const s=(i>=2&&i<STOPS.length+2)?SONGS[i-2]:ANTHEM;return s&&s.p?PBASE+s.p:null}
-function fade(to,then){clearInterval(fadeT);fadeT=setInterval(()=>{
- const d=to-player.volume;
- if(Math.abs(d)<=.05){player.volume=to;clearInterval(fadeT);then&&then()}
- else player.volume=Math.max(0,Math.min(1,player.volume+Math.sign(d)*.05));
-},45)}
+function fade(to,then){ // iOS ignores element volume — the time cap guarantees `then` always runs
+ clearInterval(fadeT);const t0=performance.now();
+ fadeT=setInterval(()=>{
+  const d=to-player.volume;
+  if(Math.abs(d)<=.05||performance.now()-t0>700){
+   try{player.volume=to}catch(e){}
+   clearInterval(fadeT);then&&then();
+  }else try{player.volume=Math.max(0,Math.min(1,player.volume+Math.sign(d)*.05))}catch(e){}
+ },45)}
 function stopDrone(){if(amb){amb.g.gain.linearRampToValueAtTime(0,amb.ac.currentTime+.6);
  const a=amb;amb=null;setTimeout(()=>a.nodes.forEach(x=>{try{x.stop()}catch(e){}}),700)}}
 function playFor(i){
@@ -827,8 +831,10 @@ function playFor(i){
  if(!u){if(!amb)amb=startAmbience();return}
  stopDrone();
  if(u===curTrack){if(player.paused)player.play().catch(()=>{});fade(.55);return}
- const sw=()=>{curTrack=u;player.src=u;player.play().then(()=>fade(.55)).catch(()=>{})};
- if(!player.paused&&player.volume>0)fade(0,sw);else sw();
+ // switch immediately, inside the swipe gesture — iOS blocks delayed play() and ignores volume fades
+ curTrack=u;player.src=u;
+ try{player.volume=0}catch(e){}
+ player.play().then(()=>fade(.55)).catch(()=>{});
 }
 player.onerror=()=>{if(musicOn&&unlocked&&!amb)amb=startAmbience()}; // offline fallback: generated ambience
 function stopMusic(){fade(0,()=>player.pause());stopDrone()}
@@ -846,6 +852,10 @@ function unlock(){
 }
 document.addEventListener('pointerdown',unlock);
 document.addEventListener('keydown',unlock);
+// safety net: if a programmatic play was ever blocked, retry inside the next touch
+document.addEventListener('pointerup',()=>{
+ if(musicOn&&unlocked&&player.src&&player.paused)player.play().catch(()=>{});
+});
 
 /* soft transition whoosh (only while sound is on) */
 function whoosh(){
